@@ -1,9 +1,10 @@
-import java.io.*;
-
+import java.io.Serializable;
 
 public class GameProgress implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int health;
-    private int weapons;  //для исключения из сериализации добавить: private transient int weapons;
+    private int weapons;
     private int lvl;
     private double distance;
 
@@ -23,5 +24,4 @@ public class GameProgress implements Serializable {
                 ", distance=" + distance +
                 '}';
     }
-
 }
