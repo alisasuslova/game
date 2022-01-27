@@ -10,79 +10,62 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         List<String> dirName = new LinkedList<>();
-        dirName.add("res");
-        dirName.add("savegames");
-        dirName.add("temp");
-        dirName.add("src/main");
-        dirName.add("src/test");
-        dirName.add("res/drawables");
-        dirName.add("res/vectors");
-        dirName.add("res/icons");
+        dirName.add("D://Games/src");
+        dirName.add("D://Games/res");
+        dirName.add("D://Games/savegames");
+        dirName.add("D://Games/temp");
+        dirName.add("D://Games/src/main");
+        dirName.add("D://Games/src/test");
+        dirName.add("D://Games/res/drawables");
+        dirName.add("D://Games/res/vectors");
+        dirName.add("D://Games/res/icons");
 
         writeToFile(makeDir(dirName));
 
         List<String> fileName = new LinkedList<>();
-        fileName.add("src/main/Main.java1");
-        fileName.add("src/main/Utils.java1");
-        fileName.add("temp/temp.txt");
+        fileName.add("D://Games/src/main/Main.java");
+        fileName.add("D://Games/src/main/Utils.java");
+        fileName.add("D://Games/temp/temp.txt");
 
         writeToFile(makeFile(fileName));
 
         GameProgress gameProgress1 = new GameProgress(70, 2, 3, 3.6);
-        String path1 = "savegames/gameProgress1.dat";
+        String path1 = "D://Games/savegames/gameProgress1.dat";
 
         GameProgress gameProgress2 = new GameProgress(85, 4, 5, 5.8);
-        String path2 = "savegames/gameProgress2.dat";
+        String path2 = "D://Games/savegames/gameProgress2.dat";
 
         GameProgress gameProgress3 = new GameProgress(90, 5, 9, 7.6);
-        String path3 = "savegames/gameProgress3.dat";
-
-        GameProgress gameProgress4 = new GameProgress(120, 10, 21, 21.3);
-        String path4 = "savegames/gameProgress4.dat";
+        String path3 = "D://Games/savegames/gameProgress3.dat";
 
         List<String> pathes = new LinkedList<>();
         pathes.add(path1);
         pathes.add(path2);
         pathes.add(path3);
-        pathes.add(path4);
 
         List<GameProgress> gameProgress = new LinkedList<>();
         gameProgress.add(gameProgress1);
         gameProgress.add(gameProgress2);
         gameProgress.add(gameProgress3);
-        gameProgress.add(gameProgress4);
 
-        saveGame(pathes,  gameProgress);
-
-        String zipPath = "savegames/gameSaves.zip";
+        saveGame(pathes, gameProgress);
+        String zipPath = "D://Games/savegames/gameSaves.zip";
         zipFiles(zipPath, pathes);
-
         deleteFiles(pathes);
-        String openZipPath = "savegames/";
 
+        String openZipPath = "D://Games/savegames/";
         openZip(zipPath, openZipPath);
 
         List<String> packed_pathes = new LinkedList<>();
-        packed_pathes.add("savegames/packed_gameProgress1.dat");
-        packed_pathes.add("savegames/packed_gameProgress2.dat");
-        packed_pathes.add("savegames/packed_gameProgress3.dat");
-        packed_pathes.add("savegames/packed_gameProgress4.dat");
+        packed_pathes.add("D://Games/savegames/packed_gameProgress1.dat");
+        packed_pathes.add("D://Games/savegames/packed_gameProgress2.dat");
+        packed_pathes.add("D://Games/savegames/packed_gameProgress3.dat");
 
-        System.out.println(openProgress(packed_pathes));
+        print(openProgress(packed_pathes));
 
     }
 
-    public static void writeToFile(String  result) {
-
-        try (FileOutputStream fos = new FileOutputStream("temp/temp.txt", true)) {
-            byte[] bytes = result.getBytes();
-            fos.write(bytes, 0, bytes.length);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    public  static  String  makeDir(List<String> dirName) {
+    public static String makeDir(List<String> dirName) {
         LocalDateTime localDateTime = LocalDateTime.now();
         StringBuilder sb = new StringBuilder();
 
@@ -98,7 +81,17 @@ public class Main {
         return result;
     }
 
-    public  static  String makeFile(List<String> fileName) throws IOException {
+    public static void writeToFile(String result) {
+
+        try (FileOutputStream fos = new FileOutputStream("D://Games/temp/temp.txt", true)) {
+            byte[] bytes = result.getBytes();
+            fos.write(bytes, 0, bytes.length);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public static String makeFile(List<String> fileName) throws IOException {
         LocalDateTime localDateTime = LocalDateTime.now();
         StringBuilder sb = new StringBuilder();
 
@@ -110,7 +103,7 @@ public class Main {
                         .append("Файл " + fileName.get(i) + " был создан")
                         .append("\n");
 
-            if(fileName.get(i).equals("temp/temp.txt"))
+            if (fileName.get(i).equals("D://Games/temp/temp.txt"))
                 sb.append(localDateTime)
                         .append(" ")
                         .append("Файл " + fileName.get(i) + " был создан")
@@ -118,6 +111,31 @@ public class Main {
         }
         String result = sb.toString();
         return result;
+    }
+
+    public static void saveGame(List<String> pathes, List<GameProgress> gameProgress) {
+
+        for (int i = 0; i < pathes.size(); i++) {
+            for (int j = 0; j < gameProgress.size(); j++) {
+                File file = new File(pathes.get(i));
+                try {
+                    if (file.createNewFile())
+                        System.out.println("Сохранение прогресса произведено. Файл " + pathes.get(i) + " записан.");
+                } catch (IOException ex) {
+                    System.out.println(ex.getMessage());
+                }
+                if (i == j) {
+                    try (FileOutputStream fos = new FileOutputStream(pathes.get(i));
+                         ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+                        oos.writeObject(gameProgress.get(j));
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                } else {
+                    continue;
+                }
+            }
+        }
     }
 
     public static void zipFiles(String zipPath, List<String> pathes) throws FileNotFoundException {
@@ -141,6 +159,15 @@ public class Main {
         System.out.println("Создан архив " + zipPath);
     }
 
+    public static void deleteFiles(List<String> pathes) {
+
+        for (int i = 0; i < pathes.size(); i++) {
+            File file = new File(pathes.get(i));
+            if (file.delete())
+                System.out.println("Файл " + pathes.get(i) + " удален");
+        }
+    }
+
     public static void openZip(String zipPath, String openZipPath) {
         try (ZipInputStream zin = new ZipInputStream(new
                 FileInputStream(zipPath))) {
@@ -156,22 +183,22 @@ public class Main {
                 zin.closeEntry();
                 fout.close();
             }
-            System.out.println("Файлы сохранений из архива " + zipPath + " разархивированы в каталоге savegames/");
+            System.out.println("Файлы сохранений из архива " + zipPath + " разархивированы в каталоге D://Games/savegames/");
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
 
     public static List<GameProgress> openProgress(List<String> packed_pathes) {
-        List<GameProgress>  www = new LinkedList<>();
+        List<GameProgress> www = new LinkedList<>();
         GameProgress rezult = null;
+
         for (int i = 0; i < packed_pathes.size(); i++) {
 
             try (FileInputStream fis = new FileInputStream(packed_pathes.get(i));
                  ObjectInputStream ois = new ObjectInputStream(fis)) {
                 rezult = (GameProgress) ois.readObject();
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
             www.add(rezult);
@@ -179,39 +206,13 @@ public class Main {
         return www;
     }
 
-    public static void saveGame(List<String> pathes, List<GameProgress> gameProgress) {
+    public static void print(List<GameProgress> www) {
 
-        for (int i = 0; i < pathes.size(); i++) {
-            for (int j = 0; j < gameProgress.size(); j++) {
-                File file = new File(pathes.get(i));
-                try {
-                    if (file.createNewFile())
-                        System.out.println("Сохранение прогресса произведено. Файл " + pathes.get(i) + " записан.");
-                } catch (IOException ex) {
-                    System.out.println(ex.getMessage());
-                }
-                if(i == j) {
-                    try (FileOutputStream fos = new FileOutputStream(pathes.get(i));
-                         ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-                        oos.writeObject(gameProgress.get(j));
-                    } catch (Exception ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                }
-                else {
-                    continue;
-                }
-            }
+        Object[] objects = www.toArray();
+        for (Object obj : objects) {
+            System.out.print(obj.toString());
         }
     }
 
-    public static void deleteFiles(List<String> pathes) {
 
-        for (int i = 0; i < pathes.size(); i++) {
-            File file = new File(pathes.get(i));
-            if (file.delete())
-                System.out.println("Файл " + pathes.get(i) + " удален");
-        }
-    }
 }
-
